@@ -1,13 +1,18 @@
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar,Pie
+from plotly.graph_objs import Bar,Pie,Histogram
 import joblib
-
+from sqlalchemy import create_engine
+import json
+import plotly
 import pandas as pd
 
 app = Flask(__name__)
 
 models = joblib.load("..\model\classifiers.pkl")
+
+engine = create_engine('sqlite:///../data/StarbucksOffers.db')
+df = pd.read_sql_table('customer_profiles', engine)
 
 @app.route('/')
 @app.route('/index')
@@ -16,9 +21,127 @@ def index():
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
 
+    value_counts = [df['transaction_discount_value'].sum(),df['transaction_bogo_value'].sum(),\
+                    df['transaction_informational_value'].sum(),df['transaction_no_offer_value'].sum()]
+    value_names = ['Discount','Bogo','Informational','No Offer']
+
+    count_counts = [df['#transaction_discount'].sum(),df['#transaction_bogo'].sum(),\
+                    df['#transaction_informational'].sum(),df['#transaction_no_offer'].sum()]
+    count_names = ['Discount','Bogo','Informational','No Offer']
+
+    df['offer_spends']=df['transaction_discount_value']+df['transaction_bogo_value']+df['transaction_informational_value']
+    df['total_spends']=df['offer_spends']+df['transaction_no_offer_value']
+    spends_by_gender=df.groupby(['gender']).agg({'total_spends':'mean','#bogos':sum,'#discounts':sum}).reset_index()
+
+    graphs = [
+        {
+            'data': [
+                Histogram(
+                    x=df['age']
+                )
+            ],
+
+            'layout': {
+                'title': 'Age distribution of Starbucks customers'
+            }
+        },
+        {
+            'data': [
+                Histogram(
+                    x=df['income']
+                )
+            ],
+
+            'layout': {
+                'title': 'Income distribution of Starbucks customers'
+            }
+        },
+        {
+            'data': [
+                Pie(
+                    labels=value_names,
+                    values=value_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of spends across offer types'
+            }
+        },
+        {
+            'data': [
+                Pie(
+                    labels=count_names,
+                    values=count_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of transaction counts across offer types'
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=spends_by_gender['gender'],
+                    y=spends_by_gender['total_spends']
+                )
+            ],
+
+            'layout': {
+                'title': 'Average Monthly Spend by Gender',
+                'yaxis': {
+                    'title': "Average Monthly Spend"
+                },
+                'xaxis': {
+                    'title': "Gender"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=spends_by_gender['gender'],
+                    y=spends_by_gender['#bogos']
+                )
+            ],
+
+            'layout': {
+                'title': 'Total bogo offers completed by Gender',
+                'yaxis': {
+                    'title': "Bogo offers"
+                },
+                'xaxis': {
+                    'title': "Gender"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=spends_by_gender['gender'],
+                    y=spends_by_gender['#discounts']
+                )
+            ],
+
+            'layout': {
+                'title': 'Total discount offers completed by Gender',
+                'yaxis': {
+                    'title': "Discounts offers"
+                },
+                'xaxis': {
+                    'title': "Gender"
+                }
+            }
+        }
+    ]
+
+    # encode plotly graphs in JSON
+    ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
+    graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs
-    return render_template('master.html', ids=[], graphJSON=None)
+    return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
 
 @app.route('/go')
