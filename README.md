@@ -36,7 +36,7 @@ Your task is to combine transaction, demographic and offer data to determine whi
 The complete details are present in the 'Starbucks Capstone Challenge.txt'
 
 ### Problem Statement
-The problem statement which we are going to address with the project is to find the chances of a user responding to a specific type of offer and create a web app where user demographics can be entered and get the offer profile for the user.
+The problem statement which we are going to address with the project is to find the chances of a user responding to a specific type of offer and create a web app where user demographics can be entered to get the offer profile for the user.
 
 ### Metrics
 The main metric to track the success is the accuracy of the offer suggestions made for each user. 
@@ -79,14 +79,14 @@ value - (dict of strings) - either an offer id or transaction amount depending o
 3. app - The folder contains a flask application in run.py which serves the static web app files from the templates included. 
 
 ## Data Analysis:<a name="analysis"></a>
-We use the pandas profiling (https://github.com/pandas-profiling/pandas-profiling) library to do basic EDA on the datasets to figure out abnormalities and visual different attribute distributions which helped in deciding the preprocessing steps included in the ETL pipeline in the process_data.py file. The pandas profiling output for all the three input datasets are available to view.
+We use the pandas profiling (https://github.com/pandas-profiling/pandas-profiling) library to do basic EDA on the datasets to figure out abnormalities and visualize different attribute distributions which helped in deciding the preprocessing steps included in the ETL pipeline in the process_data.py file. The pandas profiling output for all the three input datasets are available to view.
 
 
 
 
 ## Experiments and Results<a name="results"></a>
 We managed to achieve an accuracy of 60-70% on all three offer types after trying out various sklearn models with hyperparameter tuning. 
-On further analysis using the h2o automl library which runs various complex models, accuracy scores remained similar. This means that basic demographic features as derived in the above experiment are not enough to predict offer success with a very high precision.
+On further analysis using the h2o automl library which runs more complex models, accuracy scores remained similar. This means that basic demographic features as derived in the above experiment are not enough to predict offer success with a very high precision.
 
 
 
