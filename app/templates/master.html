@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Starbucks KYC</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Starbucks KYC</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="https://www.udacity.com/">Made with Udacity</a></li>
+                <li><a href="https://github.com/">Capstone Project</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="text-center">Starbucks KYC</h1>
+        <p class="text-center">Find what offers to give to a customer based on demographic information</p>
+        <hr />
+      
+        <div class="row">
+            <div class="col-lg-12 form-group-lg">
+                <form action="/go" method="get">
+                    <label for="quantity">Age:</label>
+                    <input type="number" id="age" name="age" min="1" max="102" value="26"><br/>
+
+                    <label for="quantity">Income:</label>
+                    <input type="number" id="income" name="income" min="0" max="100000000" step="1000" value="30000"><br/>
+
+
+                    <label for="quantity">Member Since:</label>
+                    <input type="number" id="since" name="since" min="0" max="3000" step="1" value="100"><br/>
+
+                    <input type="radio" id="male" name="gender" value="male" checked>
+                    <label for="male">Male</label><br>
+                    <input type="radio" id="female" name="gender" value="female">
+                    <label for="female">Female</label><br>
+                    <input type="radio" id="other" name="gender" value="other">
+                    <label for="other">Other</label><br/>
+
+                    <div class="col-lg-offset-5">
+                        <button type="submit" class="btn btn-lg btn-success">Profile Customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% block message %}
+        {% endblock %}
+    </div>
+</div>
+
+<div class="container">
+    {% block content %}
+        <div class="page-header">
+            <h1 class="text-center">Overview of Training Dataset</h1>
+        </div>
+    {% endblock %}
+
+    {% for id in ids %}
+        <div id="{{id}}"></div>
+    {% endfor %}
+</div>
+
+<script type="text/javascript">
+    const graphs = {{graphJSON | safe}};
+    const ids = {{ids | safe}};
+    for(let i in graphs) {
+        Plotly.plot(ids[i], graphs[i].data, graphs[i].layout);
+    }
+</script>
+
+</body>
+</html>
