@@ -116,21 +116,21 @@ The transcript for each person was processed in time order to derive the user st
 
 The timeline was processed as follows to attribute each transaction with a specific offer type :
 - Offer received : store the offer as active till expiry.
-- Offer viewed : store the offer as viewed till expiry is its active and not already complete. We keep track of the last offer which the subsequent transactions are attributed to.
+- Offer viewed : store the offer as viewed till expiry if its active and not already complete. We keep track of the last offer which the subsequent transactions are attributed to.
 - Transaction : amount is attributed to the last seen offer if any otherwise to no offer category.
-- Offer complete : reward attributed to offer type if completed after viewing otherise no offer.
+- Offer complete : reward attributed to offer type if completed after viewing otherwise no offer.
 
 ### Challenges
 It is very difficult to exactly map a transaction to whether it resulted from a specific offer or not. The user might have seen one or multiple offers and still might be going through a normal transaction without any influence. Even if we assume offers influence purchases, there can be multiple active offers and we cant accurately attribute the transaction to any one. 
 
-In the current setup, we have attribute the transaction to the last seen active offer for modelling purposes.
+In the current setup, we have attributed a transaction to the last seen active offer for modelling purposes.
 
 
 
 
 
 ## Experiments and Results<a name="results"></a>
-The initial model used income,age and gender as basic demographic features to predict the three offer types. The accuracy was very low in the 30-35% range for all three using Logistic Regression model without any hyper parameter tuning. 
+The initial model used income,age and gender as basic demographic features to predict the three offer types. The accuracy was very low in the 30-35% range for all three using Logistic Regression models without any hyper parameter tuning. 
 
 A new feature customer since was derived with the intention of capturing how long the customer has been with Starbucks that might affect the spend patterns and affinity to offers. This helped the model reach 50-55% accuracy using a basic Random Forest model with no hyper parameter tuning.
 
@@ -142,7 +142,7 @@ On further analysis using the h2o automl library which runs more complex models,
 
 
 ### Possible Improvements
-1. The current assumption is that only the last seen offer influences a transaction which might not be accurate. We can try mapping the transaction to all active offers to get a better estimate.
+1. The current assumption is that only the last seen offer influences a transaction which might not be accurate. We can try mapping the transaction (possible average distributed) to all active offers to get a better estimate.
 2. The process does not take into the account the number of bogo/discount/informational offers made to a specific user. This can provide a better baseline to measure the offer effectiveness by finding out people with only high response rate to each offer.
 
 
